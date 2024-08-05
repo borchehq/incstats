@@ -14,48 +14,53 @@ double time_elapsed(void (*function)()) {
 
 void benchmark_rstats_mean() {
     double buffer[2] = {0.0};
-    double rounds = 1000000000;
+    long long iterations = 1000000000;
+    volatile double input = 0;
 
-    for(volatile double i = 0; i < rounds; i++) {
-        rstats_mean(i, 1, buffer);
+    for(long long i = 0; i < iterations; i++) {
+        rstats_mean(input++, 1, buffer);
     }
 }
 
 void benchmark_rstats_variance() {
     double buffer[3] = {0.0};
-    double rounds = 1000000000;
+    long long iterations = 1000000000;
+    volatile double input = 0;
 
-    for(volatile double i = 0; i < rounds; i++) {
-        rstats_variance(i, 1, buffer);
+    for(long long i = 0; i < iterations; i++) {
+        rstats_variance(input++, 1, buffer);
     }
 }
 
 void benchmark_rstats_wskewness() {
     double buffer[4] = {0.0};
-    double rounds = 1000000000;
+    long long iterations = 1000000000;
+    volatile double input = 0;
 
-    for(volatile double i = 0; i < rounds; i++) {
-        rstats_skewness(i, 1, buffer);
+    for(long long i = 0; i < iterations; i++) {
+        rstats_skewness(input++, 1, buffer);
     }
 }
 
 void benchmark_rstats_kurtosis() {
     double buffer[5] = {0.0};
-    double rounds = 1000000000;
+    long long iterations = 1000000000;
+    volatile double input = 0;
 
-    for(volatile double i = 0; i < rounds; i++) {
-        rstats_kurtosis(i, 1, buffer);
+    for(long long i = 0; i < iterations; i++) {
+        rstats_kurtosis(input++, 1, buffer);
     }
 }
 
 void benchmark_rstats_central_moment() {
-    double rounds = 1000000000;
+    long long iterations = 1000000000;
     double buffer[31] = {0.0};
     double sum_weights = 0.0;
     uint64_t p = 30;
+    volatile double input = 0;
 
-    for(volatile double i = 0; i < rounds; i++) {
-        rstats_central_moment(i, 1, buffer, p);
+    for(long long i = 0; i < iterations; i++) {
+        rstats_central_moment(input++, 1, buffer, p);
     }
 }
 
