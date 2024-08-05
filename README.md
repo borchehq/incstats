@@ -87,6 +87,7 @@ inline void rstats_max(double x, double *max);
 inline void rstats_min(double x, double *min);
 ```
 
+
 **Important Note**
 All functions for higher moments (e.g., kurtosis) will also compute all lower moments 
 (e.g., skewness, variance, and mean) in a single pass. This feature enhances performance 
@@ -99,12 +100,15 @@ measures with minimal passes through the data.
 #include "rstats.h"
 
 int main() {
-    double buffer[5] = {0}; // Initialize buffer for mean, variance, skewness, kurtosis.
-    double x = 5.0;
+    double buffer[5] = {0}; // Initialize buffer for mean, variance, skewness, kurtosis
+    double data[20] = {5.0, 3.2, 4.1, 2.9, 6.5, 4.3, 5.1, 3.8, 4.6, 2.7, 
+                       3.3, 5.7, 4.9, 2.4, 3.6, 5.8, 4.0, 6.2, 3.4, 5.3};
     double w = 1.0;
 
-    // Update statistics with new value
-    rstats_kurtosis(x, w, buffer);  // This will also update mean, variance, and skewness.
+    // Update statistics with new values
+    for (int i = 0; i < 20; ++i) {
+        rstats_kurtosis(data[i], w, buffer);  // This will also update mean, variance, and skewness
+    }
 
     // Finalize and get results
     double results[4];
