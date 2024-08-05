@@ -2,7 +2,7 @@
 
 
 extern double rstats_pow(double x, uint64_t y);
-extern double factorial(uint64_t n);
+extern uint64_t factorial(uint64_t n);
 extern void rstats_mean(double x, double w, double *buffer);
 extern void rstats_mean_finalize(double *mean, double *buffer);
 extern void rstats_variance(double x, double w, double *buffer);
@@ -17,4 +17,4 @@ extern void rstats_central_moment_finalize(double *results, double *buffer,
                                            uint64_t p);
 extern void rstats_max(double x, double *max);
 extern void rstats_min(double x, double *min);
-extern double n_choose_k(uint64_t n, uint64_t k);
+extern uint64_t n_choose_k(uint64_t n, uint64_t k);
