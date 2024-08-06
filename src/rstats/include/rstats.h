@@ -45,7 +45,7 @@ inline uint64_t factorial(uint64_t n) {
     for(uint64_t i = 2; i <= n; i++) {
         result *= i;
     }
-    return (double)result;
+    return result;
 }
 
 /**
