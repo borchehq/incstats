@@ -1,6 +1,3 @@
-# Define library. Only source files here!
-project(librstats VERSION 0.1 LANGUAGES C)
-
 add_library(rstats SHARED src/rstats.c)
 
 # Define headers for this library. PUBLIC headers are used for
