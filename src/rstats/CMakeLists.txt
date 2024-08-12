@@ -1,5 +1,5 @@
 add_library(rstats SHARED src/rstats.c)
-
+target_link_libraries(rstats m)
 # Define headers for this library. PUBLIC headers are used for
 # compiling the library, and will be added to consumers' build
 # paths.
@@ -35,8 +35,8 @@ export(TARGETS rstats FILE rstatsConfig.cmake)
 add_executable(testrstats test/test_rstats.c)
 add_executable(benchmarkrstats test/benchmark_rstats.c)
 
-target_link_libraries(testrstats rstats m)
-target_link_libraries(benchmarkrstats rstats m)
+target_link_libraries(testrstats rstats)
+target_link_libraries(benchmarkrstats rstats)
 
 add_test(testrstats testrstats)
 
