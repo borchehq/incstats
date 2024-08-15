@@ -97,7 +97,7 @@ void test_rstats_kurtosis() {
         }
         kurtosis_comp /= sum_weights_comp;
         variance_comp /= sum_weights_comp;
-        //printf("Variance: %f\n", variance_comp);
+       // printf("Variance: %f\n", pow(variance_comp, 2.0));
         if(i > 0) {
             assert(fabs(results[3] - kurtosis_comp / pow(variance_comp, 2.0)) < 1e-5);
         }
@@ -111,27 +111,47 @@ void test_central_moment() {
     double x[10] = {10831.0, 10825.03, 10831.4, 10831.4, 10825.03, 10830.0, 10830.0, 10830.0, 10826.31, 10830.0};
     double weights[10] = {0.00548588, 0.0052706, 0.078, 0.09186439, 0.18799166, 1.59741459, 0.53998836, 0.50323176, 0.0334425, 0.76408126};
     uint64_t p = 15;
-    double results[15] = {0.0}, buffer[15 + 1] = {0.0}, wmoments_comp[15] = {0.0};
+    double mass = 0;
+    double mean_cmp = 0;
+    double results[15 + 2] = {0.0}, buffer[15 + 1] = {0.0}, wmoments_comp[15 + 1] = {0.0};
+    double results_2[4] = {0.0}, buffer_2[5] = {0.0};
     double sum_weights = 0.0, sum_weights_comp = 0.0;
     double tmp = 0.0;
 
-     for(size_t i = 0; i < 10; i++) {
-        rstats_central_moment(x[i], weights[i], buffer, p);
-        rstats_central_moment_finalize(results, buffer, p);
-
-        wmoments_comp[0] += weights[i] * x[i];
-        sum_weights_comp += weights[i];
-        //printf("%f, %f\n", results[0],  wmoments_comp[0] / sum_weights_comp);
-        assert(fabs(results[0] - wmoments_comp[0] / sum_weights_comp) < 1e-7);
-        for(size_t k = 1; k < p; k++) {
-            for(size_t j = 0; j < i + 1; j++) {
-                wmoments_comp[k] += weights[j] * rstats_pow(x[j] - (wmoments_comp[0] / sum_weights_comp), k + 1);
-            }
-            //printf("%f, %f\n", results[k],  wmoments_comp[k] / sum_weights_comp);
-            assert(fabs(results[k] - wmoments_comp[k] / sum_weights_comp) < 1e-2);
-            wmoments_comp[k] = 0.0;
+    for(size_t i = 0; i < 10; i++) {
+    rstats_central_moment(x[i], weights[i], buffer, p);
+    rstats_central_moment_finalize(results, buffer, p, false);
+    
+    // Calculate mean.
+    mass += weights[i] * x[i];
+    sum_weights_comp += weights[i];
+    mean_cmp = mass / sum_weights_comp;
+    //printf("%f, %f\n", results[0],  wmoments_comp[0] / sum_weights_comp);
+    assert(fabs(results[0] - mean_cmp) < 1e-7);
+    for(size_t k = 0; k < p; k++) {
+        for(size_t j = 0; j < i + 1; j++) {
+            wmoments_comp[k] += weights[j] * rstats_pow(x[j] - mean_cmp, k);
         }
-     }
+        //printf("%f, %f\n", results[k + 1],  wmoments_comp[k] / sum_weights_comp);
+        assert(fabs(results[k + 1] - wmoments_comp[k] / sum_weights_comp) < 1e-2);
+        wmoments_comp[k] = 0.0;
+    }
+    }
+
+    for(size_t i = 0; i < 16; i++) {
+        buffer[i] = 0.0;
+    }
+
+    for(size_t i = 0; i < 10; i++) {
+        rstats_central_moment(x[i], weights[i], buffer, p);
+        rstats_central_moment_finalize(results, buffer, p, true);
+        rstats_kurtosis(x[i], weights[i], buffer_2);
+        rstats_kurtosis_finalize(results_2, buffer_2);
+        if(i > 0) {
+            assert(fabs(results[4] - results_2[2]) < 1e-2);
+            assert(fabs(results[5] - results_2[3]) < 1e-2);
+        }
+    }
 }
 
 void test_rstats_max() {

@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 
 /**
@@ -75,6 +76,7 @@ inline uint64_t n_choose_k(uint64_t n, uint64_t k) {
     }
     return result;
 }
+
 
 /**
  * @brief Updates the running mean of a dataset.
@@ -313,8 +315,9 @@ inline void rstats_central_moment(double x, double w, double *buffer, uint64_t p
  * @param results A pointer to an array of doubles where the final mean and 
  * central moments will be stored:
  *                - `results[0]` will store the final mean value.
- *                - `results[1]` to `results[p-1]` will store the final central 
- *                  moments from the 2nd to the p-th order.
+ *                - `results[1]` to `results[p+1]` will store the final central 
+ *                  moments from the 0th to the p-th order.
+ * results must point to an array of length p + 2.
  * @param buffer A pointer to an array of doubles used in 
  * `rstats_central_moment` to calculate the running statistics.
  * @param p The order of the highest central moment to finalize.
@@ -323,10 +326,21 @@ inline void rstats_central_moment(double x, double w, double *buffer, uint64_t p
  * `rstats_central_moment`. This call is non-destructive, allowing multiple 
  * calls to the same buffer.
  */
-inline void rstats_central_moment_finalize(double *results, double *buffer, uint64_t p) {
-    results[0] = buffer[1];
-    for(uint64_t i = 1; i < p; i++) {
-        results[i] = buffer[i + 1] / buffer[0];
+inline void rstats_central_moment_finalize(double *results, double *buffer, 
+uint64_t p, bool standardize) {
+    results[0] = buffer[1]; // Mean.
+    results[1] = 1.0; // 0th central moment is always 1.
+    results[2] = 0.0; // 1st central moment is always 0.
+    for(uint64_t i = 3; i < p + 2; i++) {
+        results[i] = buffer[i - 1] / buffer[0];
+    }
+    if(standardize) {
+        results[1] = 1.0; // 0th standardized central moment is always 1.
+        results[2] = 0.0; // 1st standardized central moment is always 0.
+        for(uint64_t i = 4; i < p + 2; i++) {
+            results[i] = results[i] / rstats_pow(sqrt(results[3]), i - 1);
+        }
+        results[3] = 1.0; // 2nd standardized central moment is always 1.
     }
 }
 

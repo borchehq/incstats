@@ -14,7 +14,7 @@ extern void rstats_kurtosis_finalize(double *results, double *buffer);
 extern void rstats_central_moment(double x, double w, double *buffer,
                                   uint64_t p);
 extern void rstats_central_moment_finalize(double *results, double *buffer,
-                                           uint64_t p);
+                                           uint64_t p, bool standardize);
 extern void rstats_max(double x, double *max);
 extern void rstats_min(double x, double *min);
 extern uint64_t n_choose_k(uint64_t n, uint64_t k);
