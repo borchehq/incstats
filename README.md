@@ -6,6 +6,7 @@
 
 - Compute running mean, variance, skewness, and kurtosis.
 - Calculate central moments up to a specified order.
+- Calculate standardized central moments up to a specified order.
 - Track maximum and minimum values.
 - Designed for efficiency and simplicity.
 - Handles weighted data points.
@@ -78,7 +79,7 @@ inline void rstats_kurtosis_finalize(double *results, double *buffer);
 Central Moments
 ```C
 inline void rstats_central_moment(double x, double w, double *buffer, uint64_t p);
-inline void rstats_central_moment_finalize(double *results, double *buffer, uint64_t p);
+inline void rstats_central_moment_finalize(double *results, double *buffer, uint64_t p, bool standardize);
 ```
 
 Maximum and Minimum
