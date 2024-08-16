@@ -117,6 +117,7 @@ void test_central_moment() {
     double results_2[4] = {0.0}, buffer_2[5] = {0.0};
     double sum_weights = 0.0, sum_weights_comp = 0.0;
     double tmp = 0.0;
+    double results_3[3], buffer_3[3];
 
     for(size_t i = 0; i < 10; i++) {
     rstats_central_moment(x[i], weights[i], buffer, p);
@@ -126,14 +127,14 @@ void test_central_moment() {
     mass += weights[i] * x[i];
     sum_weights_comp += weights[i];
     mean_cmp = mass / sum_weights_comp;
-    //printf("%f, %f\n", results[0],  wmoments_comp[0] / sum_weights_comp);
-    assert(fabs(results[0] - mean_cmp) < 1e-7);
+    //printf("%f, %f\n", results[16],  mean_cmp);
+    assert(fabs(results[16] - mean_cmp) < 1e-7);
     for(size_t k = 0; k < p; k++) {
         for(size_t j = 0; j < i + 1; j++) {
             wmoments_comp[k] += weights[j] * rstats_pow(x[j] - mean_cmp, k);
         }
-        //printf("%f, %f\n", results[k + 1],  wmoments_comp[k] / sum_weights_comp);
-        assert(fabs(results[k + 1] - wmoments_comp[k] / sum_weights_comp) < 1e-2);
+        //printf("%f, %f\n", results[k],  wmoments_comp[k] / sum_weights_comp);
+        assert(fabs(results[k] - wmoments_comp[k] / sum_weights_comp) < 1e-2);
         wmoments_comp[k] = 0.0;
     }
     }
@@ -148,8 +149,27 @@ void test_central_moment() {
         rstats_kurtosis(x[i], weights[i], buffer_2);
         rstats_kurtosis_finalize(results_2, buffer_2);
         if(i > 0) {
-            assert(fabs(results[4] - results_2[2]) < 1e-2);
-            assert(fabs(results[5] - results_2[3]) < 1e-2);
+            assert(fabs(results[3] - results_2[2]) < 1e-2);
+            assert(fabs(results[4] - results_2[3]) < 1e-2);
+        }
+    }
+
+    for(size_t k = 0; k < 3; k++) {
+        for(size_t i = 0; i < 10; i++) {
+            rstats_central_moment(x[i], weights[i], buffer_3, k);
+            rstats_central_moment_finalize(results_3, buffer_3, k, false);
+            assert(results_3[0] == 1.0);
+            if(k >= 1) {
+                assert(results_3[1] == 0.0);
+            }
+            rstats_central_moment_finalize(results_3, buffer_3, k, true);
+            assert(results_3[0] == 1.0);
+            if(k >= 1) {
+                assert(results_3[1] == 0.0);
+            }
+            if(k >= 2) {
+                assert(results_3[2] == 1.0);
+            }
         }
     }
 }
