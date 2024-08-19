@@ -1,6 +1,11 @@
 #ifndef RSTATS_H
 #define RSTATS_H
 
+// This is needed for compilation with MSVC under Windows.
+#ifndef _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES
+#endif
+
 #include <math.h>
 #include <stdint.h>
 #include <stdbool.h>
