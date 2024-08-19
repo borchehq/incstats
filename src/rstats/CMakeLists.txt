@@ -37,11 +37,11 @@ export(TARGETS rstats FILE rstatsConfig.cmake)
 
 # Every library has unit tests, of course
 add_executable(testrstats test/test_rstats.c)
-add_executable(benchmarkrstats test/benchmark_rstats.c)
 
 target_link_libraries(testrstats rstats)
 #benchmarkrstats depends on sys/time.h which is not available on Winbdows systems.
 if(NOT WIN32)
+  add_executable(benchmarkrstats test/benchmark_rstats.c)
   target_link_libraries(benchmarkrstats rstats)
 endif()
 add_test(testrstats testrstats)
