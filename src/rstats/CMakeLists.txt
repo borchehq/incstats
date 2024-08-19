@@ -40,7 +40,9 @@ add_executable(testrstats test/test_rstats.c)
 add_executable(benchmarkrstats test/benchmark_rstats.c)
 
 target_link_libraries(testrstats rstats)
-target_link_libraries(benchmarkrstats rstats)
-
+#benchmarkrstats depends on sys/time.h which is not available on Winbdows systems.
+if(NOT WIN32)
+  target_link_libraries(benchmarkrstats rstats)
+endif()
 add_test(testrstats testrstats)
 
