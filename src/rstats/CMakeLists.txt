@@ -1,5 +1,9 @@
 add_library(rstats SHARED src/rstats.c)
-target_link_libraries(rstats m)
+# Don't link math library under windows platforms as it causes an linker 
+# error with MSVC.
+if(NOT WIN32)
+  target_link_libraries(rstats m)
+endif()
 # Define headers for this library. PUBLIC headers are used for
 # compiling the library, and will be added to consumers' build
 # paths.
