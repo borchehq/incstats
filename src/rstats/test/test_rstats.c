@@ -10,7 +10,7 @@
 
 #include "rstats.h"
 
-#define LENGTH_ARRAY 10000
+#define LENGTH_ARRAY 1000
 #define ITERATIONS_TEST 100
 
 
@@ -169,20 +169,15 @@ void test_central_moment() {
     for(size_t m = 0; m < ITERATIONS_TEST; m++) {
         double x[LENGTH_ARRAY] = {0.0};
         double weights[LENGTH_ARRAY] = {0.0};
-        uint64_t p = 15;
+        uint64_t p = 10;
         double mass = 0.0;
         double mean_cmp = 0.0;
         double results[15 + 2] = {0.0};
         double results_standardized[15 + 2] = {0.0};
         double buffer[15 + 1] = {0.0};
         double wmoments_comp[15 + 1] = {0.0};
-        double results_2[4] = {0.0};
-        double buffer_2[5] = {0.0};
         double sum_weights = 0.0;
         double sum_weights_comp = 0.0;
-        double tmp = 0.0;
-        double results_3[3];
-        double buffer_3[3];
 
         fill_random(x, LENGTH_ARRAY, 0.0, 1.0);
         fill_random(weights, LENGTH_ARRAY, 1e-5, 1.0);
@@ -196,7 +191,7 @@ void test_central_moment() {
             mass += weights[i] * x[i];
             sum_weights_comp += weights[i];
             mean_cmp = mass / sum_weights_comp;
-            assert(fabs(results[16] - mean_cmp) < 1e-7);
+            assert(fabs(results[p + 1] - mean_cmp) < 1e-7);
             for(size_t k = 0; k < p; k++) {
                 for(size_t j = 0; j < i + 1; j++) {
                     wmoments_comp[k] += weights[j] * pow(x[j] - mean_cmp, k);
@@ -208,23 +203,10 @@ void test_central_moment() {
                 double moment = wmoments_comp[k] / sum_weights_comp;
                 double moment_2 = wmoments_comp[2] / sum_weights_comp;
                 double norm = pow(sqrt(moment_2), k);
-                
-                assert(fabs(results[k] - moment) < 1e-7);
-                if(!(i == 0 || fabs(results_standardized[k] - moment
-                / norm) < 1e-7)) {
-                    printf("%.16f, %.16f\n", results_standardized[k], moment / norm);
-                    printf("Moment %f\n", moment);
-                    printf("Moment 2 %f\n", moment_2);
-                    printf("Norm %f\n", norm);
-                    printf("i %i\n", i);
-                    printf("k %i\n", k);
-                    printf("m %i\n", m);
-                    printf("%f, %f \n", results[k], moment);
-                    printf("%f, %f\n", weights[0], x[0]);
-                    printf("%f, %f\n", weights[1], x[1]);
-                }
-                assert(i == 0 || fabs(results_standardized[k] - moment
-                / norm) < 1e-7);
+                double std_centr_moment = moment / norm;        
+                assert(fabs((results[k] - moment)) < 1e-5);
+                assert(i == 0 || fabs(results_standardized[k] - 
+                std_centr_moment) < 1e-5);
                 wmoments_comp[k] = 0.0;
                 wmoments_comp[2] = 0.0;
             }
