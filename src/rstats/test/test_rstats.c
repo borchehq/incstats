@@ -215,26 +215,32 @@ void test_central_moment() {
 }
 
 void test_rstats_max() {
-    double x[10] = {4, 8, 12, 16, 23, 45, 678, 123, 2.0123, M_PI};
+    double x[LENGTH_ARRAY] = {0.0};
     double max = DBL_MIN;
-    double max_val;
 
-    for(size_t i = 0; i < 10; i++) {
-        rstats_max(x[i], &max);
+    for(size_t i = 0; i < ITERATIONS_TEST; i++) {
+        fill_random(x, LENGTH_ARRAY, -10000, 10000);
+        x[LENGTH_ARRAY / 2] = 18000.0;
+        for(size_t i = 0; i < LENGTH_ARRAY; i++) {
+            rstats_max(x[i], &max);
+        }
+        assert(18000.0 == max);
     }
-    assert(678 == max);
 }
 
 
 void test_rstats_min() {
-    double x[10] = {4, 8, 12, 16, 23, 45, 678, 123, 2.0123, M_PI};
+    double x[LENGTH_ARRAY] = {0.0};
     double min = DBL_MAX;
-    double min_val;
 
-    for(size_t i = 0; i < 10; i++) {
-        rstats_min(x[i], &min);
+    for(size_t i = 0; i < ITERATIONS_TEST; i++) {
+        fill_random(x, LENGTH_ARRAY, -10000, 10000);
+        x[LENGTH_ARRAY / 2] = -18000.0;
+        for(size_t i = 0; i < LENGTH_ARRAY; i++) {
+            rstats_min(x[i], &min);
+        }
+        assert(-18000.0 == min);
     }
-    assert(2.0123 == min);
 }
 
 int main(int argc, char const *argv[]) {
