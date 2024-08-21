@@ -1,174 +1,232 @@
+#ifdef NDEBUG
+#undef NDEBUG
+#endif
+
 #include <stdio.h>
 #include <assert.h>
 #include <math.h>
 #include <float.h>
+#include <stdlib.h>
 
 #include "rstats.h"
 
-void test_rstats_mean() {
-    double x[10] = {4, 8, 12, 16, 23, 45, 678, 123, 2.0123, M_PI};
-    double weights[10] = {1, 7, 2, 0.3, 1, M_PI_2, M_PI_4, 10, 9, M_2_SQRTPI};
-    double mean = 0, sum_weights = 0;
-    double comp;
-    double sum_comp = 0, sum_weights_comp = 0;
-    double buffer[2] = {0};
+#define LENGTH_ARRAY 10000
+#define ITERATIONS_TEST 100
 
-    for(size_t i = 0; i < 10; i++) {
-        rstats_mean(x[i], weights[i], buffer);
-        rstats_mean_finalize(&mean, buffer);
-        sum_comp += weights[i] * x[i];
-        sum_weights_comp += weights[i];
-        comp = sum_comp / sum_weights_comp;
-        //printf("%f, %f\n", wmean, comp);
-        assert(fabs(mean - comp) < 1e-7);
+
+void fill_random(double *array, size_t length, double min, double max) {
+    for(size_t i = 0; i < length; i++) {
+        array[i] = min + (max - min) * rand() / (double) RAND_MAX;
+    }
+}
+
+void test_rstats_mean() {
+    for(size_t k = 0; k < ITERATIONS_TEST; k++) {
+        double buffer[2] = {0.0};
+        double x[LENGTH_ARRAY] = {0.0};
+        double weights[LENGTH_ARRAY] = {0.0};
+        double mean = 0.0;
+        double sum_weights = 0.0;
+        double comp = 0.0;
+        double sum_comp = 0.0;
+        double sum_weights_comp = 0.0;
+
+        fill_random(x, LENGTH_ARRAY, 0.0, 1.0);
+        fill_random(weights, LENGTH_ARRAY, 1e-5, 1.0);
+
+        for(size_t i = 0; i < LENGTH_ARRAY; i++) {
+            rstats_mean(x[i], weights[i], buffer);
+            rstats_mean_finalize(&mean, buffer);
+            sum_comp += weights[i] * x[i];
+            sum_weights_comp += weights[i];
+            comp = sum_comp / sum_weights_comp;
+            assert(fabs(mean - comp) < 1e-7);
+        }
     }
 }
 
 void test_rstats_variance() {
-    double x[10] = {10831.0, 10825.03, 10831.4, 10831.4, 10825.03, 10830.0, 10830.0, 10830.0, 10826.31, 10830.0};
-    double weights[10] = {0.00548588, 0.0052706, 0.078, 0.09186439, 0.18799166, 1.59741459, 0.53998836, 0.50323176, 0.0334425, 0.76408126};
-    double buffer[3] = {0.0};
-    double results[2] = {0.0};
-    double comp, variance;
-    double sum_comp = 0, sum_weights_comp = 0, comp_v = 0;
+    for(size_t k = 0; k < ITERATIONS_TEST; k++) {
+        double x[LENGTH_ARRAY] = {0.0};
+        double weights[LENGTH_ARRAY] = {0.0};
+        double buffer[3] = {0.0};
+        double results[2] = {0.0};
+        double comp = 0.0;
+        double variance = 0.0;
+        double sum_comp = 0.0;
+        double sum_weights_comp = 0.0;
+        double comp_v = 0.0;
 
+        fill_random(x, LENGTH_ARRAY, 0.0, 1.0);
+        fill_random(weights, LENGTH_ARRAY, 1e-5, 1.0);
 
-    for(size_t i = 0; i < 10; i++) {
-        rstats_variance(x[i], 1, buffer);
-        rstats_variance_finalize(results, buffer);
-        sum_comp += x[i];
-        sum_weights_comp += 1;
-        comp = sum_comp / sum_weights_comp;
-        for(size_t j = 0; j < i + 1; j++) {
-            comp_v += (x[j] - comp) * (x[j] - comp);
+        for(size_t i = 0; i < LENGTH_ARRAY; i++) {
+            rstats_variance(x[i], weights[i], buffer);
+            rstats_variance_finalize(results, buffer);
+            sum_comp += weights[i] * x[i];
+            sum_weights_comp += weights[i];
+            comp = sum_comp / sum_weights_comp;
+            for(size_t j = 0; j < i + 1; j++) {
+                comp_v += weights[j] * (x[j] - comp) * (x[j] - comp);
+            }
+            comp_v /= sum_weights_comp;
+            assert(fabs(results[0] - comp) < 1e-7);
+            assert(fabs(results[1] - comp_v) < 1e-7);
+            comp_v = 0;
         }
-        comp_v /= sum_weights_comp;
-        //printf("%f, %f\n", variance, comp_v);
-        assert(fabs(results[0] - comp) < 1e-7);
-        assert(fabs(results[1] - comp_v) < 1e-7);
-        assert(fabs(buffer[2] / buffer[0] - comp_v) < 1e-7);
-        comp_v = 0;
     }
-
 }
 
 void test_rstats_wskewness() {
-    double x[10] = {10831.0, 10825.03, 10831.4, 10831.4, 10825.03, 10830.0, 10830.0, 10830.0, 10826.31, 10830.0};
-    double weights[10] = {0.00548588, 0.0052706, 0.078, 0.09186439, 0.18799166, 1.59741459, 0.53998836, 0.50323176, 0.0334425, 0.76408126};
-    double buffer[4] = {0.0}, results[3] = {0.0};
-    double skewness, dummy;
-    double sum_weights_comp, skewness_comp = 0, sum_comp = 0, comp = 0, variance_comp = 0;
+    for(size_t k = 0; k < ITERATIONS_TEST; k++) {
+        double x[LENGTH_ARRAY] = {0.0};
+        double weights[LENGTH_ARRAY] = {0.0};
+        double buffer[4] = {0.0};
+        double results[3] = {0.0};
+        double sum_weights_comp = 0.0;
+        double skewness_comp = 0.0;
+        double sum_comp = 0.0;
+        double comp = 0.0;
+        double variance_comp = 0.0;
+        
+        fill_random(x, LENGTH_ARRAY, 0.0, 1.0);
+        fill_random(weights, LENGTH_ARRAY, 1e-5, 1.0);
 
-    for(size_t i = 0; i < 10; i++) {
-        rstats_skewness(x[i], weights[i], buffer);
-        rstats_skewness_finalize(results, buffer);
-        sum_comp += weights[i] * x[i];
-        sum_weights_comp += weights[i];
-        comp = sum_comp / sum_weights_comp;
-         for(size_t j = 0; j < i + 1; j++) {
-            skewness_comp += weights[j] * (x[j] - comp) * (x[j] - comp) * (x[j] - comp);
-            variance_comp += weights[j] * (x[j] - comp) * (x[j] - comp);
+        for(size_t i = 0; i < LENGTH_ARRAY; i++) {
+            rstats_skewness(x[i], weights[i], buffer);
+            rstats_skewness_finalize(results, buffer);
+            sum_comp += weights[i] * x[i];
+            sum_weights_comp += weights[i];
+            comp = sum_comp / sum_weights_comp;
+            for(size_t j = 0; j < i + 1; j++) {
+                skewness_comp += weights[j] * (x[j] - comp) * (x[j] - comp)
+                * (x[j] - comp);
+                variance_comp += weights[j] * (x[j] - comp) * (x[j] - comp);
+            }
+            skewness_comp /= sum_weights_comp;
+            variance_comp /= sum_weights_comp;
+            assert(fabs(results[0] - comp) < 1e-7);
+            assert(fabs(results[1] - variance_comp) < 1e-7);
+            if(i > 0) {
+                skewness_comp = skewness_comp / pow(variance_comp, 1.5);
+                assert(fabs(results[2] - skewness_comp) < 1e-7);
+            }
+            skewness_comp = 0;
+            variance_comp = 0;
         }
-        skewness_comp /= sum_weights_comp;
-        variance_comp /= sum_weights_comp;
-        if(i > 0)
-            assert(fabs(results[2] - skewness_comp / pow(variance_comp, 1.5)) < 1e-7);
-        //printf("%f, %f\n", skewness, skewness_comp);
-        skewness_comp = 0;
-        variance_comp = 0;
     }
 }
 
 void test_rstats_kurtosis() {
-    double x[10] = {10831.0, 10825.03, 10831.4, 10831.4, 10825.03, 10830.0, 10830.0, 10830.0, 10826.31, 10830.0};
-    double weights[10] = {0.00548588, 0.0052706, 0.078, 0.09186439, 0.18799166, 1.59741459, 0.53998836, 0.50323176, 0.0334425, 0.76408126};
-    double buffer[5] = {0.0}, results[4] = {0.0};
-    double kurtosis, dummy;
-    double sum_weights_comp, kurtosis_comp = 0, skewness_comp = 0, sum_comp = 0, comp = 0, variance_comp = 0;
-    for(size_t i = 0; i < 10; i++) {
-        rstats_kurtosis(x[i], weights[i], buffer);
-        rstats_kurtosis_finalize(results, buffer);
-        sum_comp += weights[i] * x[i];
-        sum_weights_comp += weights[i];
-        comp = sum_comp / sum_weights_comp;
-         for(size_t j = 0; j < i + 1; j++) {
-            kurtosis_comp += weights[j] * (x[j] - comp) * (x[j] - comp) * (x[j] - comp) * (x[j] - comp);
-            variance_comp += weights[j] * (x[j] - comp) * (x[j] - comp);
+    for(size_t k = 0; k < ITERATIONS_TEST; k++) {
+        double x[LENGTH_ARRAY] = {0.0};
+        double weights[LENGTH_ARRAY] = {0.0};
+        double buffer[5] = {0.0};
+        double results[4] = {0.0};
+        double kurtosis = 0;
+        double sum_weights_comp = 0;
+        double kurtosis_comp = 0;
+        double skewness_comp = 0;
+        double sum_comp = 0;
+        double comp = 0;
+        double variance_comp = 0;
+
+        fill_random(x, LENGTH_ARRAY, 0.0, 1.0);
+        fill_random(weights, LENGTH_ARRAY, 1e-5, 1.0);
+
+        for(size_t i = 0; i < LENGTH_ARRAY; i++) {
+            rstats_kurtosis(x[i], weights[i], buffer);
+            rstats_kurtosis_finalize(results, buffer);
+            sum_comp += weights[i] * x[i];
+            sum_weights_comp += weights[i];
+            comp = sum_comp / sum_weights_comp;
+            for(size_t j = 0; j < i + 1; j++) {
+                kurtosis_comp += weights[j] * (x[j] - comp) * (x[j] - comp) *
+                (x[j] - comp) * (x[j] - comp);
+                skewness_comp += weights[j] * (x[j] - comp) * (x[j] - comp)
+                * (x[j] - comp);
+                variance_comp += weights[j] * (x[j] - comp) * (x[j] - comp);
+            }
+            kurtosis_comp /= sum_weights_comp;
+            skewness_comp /= sum_weights_comp;
+            variance_comp /= sum_weights_comp;
+            assert(fabs(results[0] - comp) < 1e-7);
+            assert(fabs(results[1] - variance_comp) < 1e-7);
+            if(i > 0) {
+                skewness_comp = skewness_comp / pow(variance_comp, 1.5);
+                assert(fabs(results[2] - skewness_comp) < 1e-7);
+                assert(fabs(results[3] - kurtosis_comp / 
+                pow(variance_comp, 2.0)) < 1e-5);
+            }
+            kurtosis_comp = 0.0;
+            skewness_comp = 0.0;
+            variance_comp = 0.0;
         }
-        kurtosis_comp /= sum_weights_comp;
-        variance_comp /= sum_weights_comp;
-       // printf("Variance: %f\n", pow(variance_comp, 2.0));
-        if(i > 0) {
-            assert(fabs(results[3] - kurtosis_comp / pow(variance_comp, 2.0)) < 1e-5);
-        }
-        //printf("%f, %f\n", results[3], kurtosis_comp / (variance_comp * variance_comp));
-        kurtosis_comp = 0.0;
-        variance_comp = 0.0;
     }
 }
 
 void test_central_moment() {
-    double x[10] = {10831.0, 10825.03, 10831.4, 10831.4, 10825.03, 10830.0, 10830.0, 10830.0, 10826.31, 10830.0};
-    double weights[10] = {0.00548588, 0.0052706, 0.078, 0.09186439, 0.18799166, 1.59741459, 0.53998836, 0.50323176, 0.0334425, 0.76408126};
-    uint64_t p = 15;
-    double mass = 0;
-    double mean_cmp = 0;
-    double results[15 + 2] = {0.0}, buffer[15 + 1] = {0.0}, wmoments_comp[15 + 1] = {0.0};
-    double results_2[4] = {0.0}, buffer_2[5] = {0.0};
-    double sum_weights = 0.0, sum_weights_comp = 0.0;
-    double tmp = 0.0;
-    double results_3[3], buffer_3[3];
+    for(size_t m = 0; m < ITERATIONS_TEST; m++) {
+        double x[LENGTH_ARRAY] = {0.0};
+        double weights[LENGTH_ARRAY] = {0.0};
+        uint64_t p = 15;
+        double mass = 0.0;
+        double mean_cmp = 0.0;
+        double results[15 + 2] = {0.0};
+        double results_standardized[15 + 2] = {0.0};
+        double buffer[15 + 1] = {0.0};
+        double wmoments_comp[15 + 1] = {0.0};
+        double results_2[4] = {0.0};
+        double buffer_2[5] = {0.0};
+        double sum_weights = 0.0;
+        double sum_weights_comp = 0.0;
+        double tmp = 0.0;
+        double results_3[3];
+        double buffer_3[3];
 
-    for(size_t i = 0; i < 10; i++) {
-    rstats_central_moment(x[i], weights[i], buffer, p);
-    rstats_central_moment_finalize(results, buffer, p, false);
-    
-    // Calculate mean.
-    mass += weights[i] * x[i];
-    sum_weights_comp += weights[i];
-    mean_cmp = mass / sum_weights_comp;
-    //printf("%f, %f\n", results[16],  mean_cmp);
-    assert(fabs(results[16] - mean_cmp) < 1e-7);
-    for(size_t k = 0; k < p; k++) {
-        for(size_t j = 0; j < i + 1; j++) {
-            wmoments_comp[k] += weights[j] * rstats_pow(x[j] - mean_cmp, k);
-        }
-        //printf("%f, %f\n", results[k],  wmoments_comp[k] / sum_weights_comp);
-        assert(fabs(results[k] - wmoments_comp[k] / sum_weights_comp) < 1e-2);
-        wmoments_comp[k] = 0.0;
-    }
-    }
+        fill_random(x, LENGTH_ARRAY, 0.0, 1.0);
+        fill_random(weights, LENGTH_ARRAY, 1e-5, 1.0);
 
-    for(size_t i = 0; i < 16; i++) {
-        buffer[i] = 0.0;
-    }
-
-    for(size_t i = 0; i < 10; i++) {
-        rstats_central_moment(x[i], weights[i], buffer, p);
-        rstats_central_moment_finalize(results, buffer, p, true);
-        rstats_kurtosis(x[i], weights[i], buffer_2);
-        rstats_kurtosis_finalize(results_2, buffer_2);
-        if(i > 0) {
-            assert(fabs(results[3] - results_2[2]) < 1e-2);
-            assert(fabs(results[4] - results_2[3]) < 1e-2);
-        }
-    }
-
-    for(size_t k = 0; k < 3; k++) {
-        for(size_t i = 0; i < 10; i++) {
-            rstats_central_moment(x[i], weights[i], buffer_3, k);
-            rstats_central_moment_finalize(results_3, buffer_3, k, false);
-            assert(results_3[0] == 1.0);
-            if(k >= 1) {
-                assert(results_3[1] == 0.0);
-            }
-            rstats_central_moment_finalize(results_3, buffer_3, k, true);
-            assert(results_3[0] == 1.0);
-            if(k >= 1) {
-                assert(results_3[1] == 0.0);
-            }
-            if(k >= 2) {
-                assert(results_3[2] == 1.0);
+        for(size_t i = 0; i < LENGTH_ARRAY; i++) {
+            rstats_central_moment(x[i], weights[i], buffer, p);
+            rstats_central_moment_finalize(results, buffer, p, false);
+            rstats_central_moment_finalize(results_standardized, buffer, p,
+            true);
+            // Calculate mean.
+            mass += weights[i] * x[i];
+            sum_weights_comp += weights[i];
+            mean_cmp = mass / sum_weights_comp;
+            assert(fabs(results[16] - mean_cmp) < 1e-7);
+            for(size_t k = 0; k < p; k++) {
+                for(size_t j = 0; j < i + 1; j++) {
+                    wmoments_comp[k] += weights[j] * pow(x[j] - mean_cmp, k);
+                    if(k != 2) {
+                        wmoments_comp[2] += 
+                        weights[j] * pow(x[j] - mean_cmp, 2);
+                    }
+                }
+                double moment = wmoments_comp[k] / sum_weights_comp;
+                double moment_2 = wmoments_comp[2] / sum_weights_comp;
+                double norm = pow(sqrt(moment_2), k);
+                
+                assert(fabs(results[k] - moment) < 1e-7);
+                if(!(i == 0 || fabs(results_standardized[k] - moment
+                / norm) < 1e-7)) {
+                    printf("%.16f, %.16f\n", results_standardized[k], moment / norm);
+                    printf("Moment %f\n", moment);
+                    printf("Moment 2 %f\n", moment_2);
+                    printf("Norm %f\n", norm);
+                    printf("i %i\n", i);
+                    printf("k %i\n", k);
+                    printf("m %i\n", m);
+                    printf("%f, %f \n", results[k], moment);
+                    printf("%f, %f\n", weights[0], x[0]);
+                    printf("%f, %f\n", weights[1], x[1]);
+                }
+                assert(i == 0 || fabs(results_standardized[k] - moment
+                / norm) < 1e-7);
+                wmoments_comp[k] = 0.0;
+                wmoments_comp[2] = 0.0;
             }
         }
     }
@@ -198,6 +256,7 @@ void test_rstats_min() {
 }
 
 int main(int argc, char const *argv[]) {
+    srand(111111);
     printf("[i] Testing rstats_mean()...\n");
     test_rstats_mean();
     printf("[i] Testing rstats_variance()...\n");

@@ -9,7 +9,8 @@ double time_elapsed(void (*function)()) {
     gettimeofday(&tv_begin, NULL);
     function();
     gettimeofday(&tv_end, NULL);
-    return ((tv_end.tv_sec * 1e6 + tv_end.tv_usec) - (tv_begin.tv_sec * 1e6 + tv_begin.tv_usec)) / (double)1e6;
+    return ((tv_end.tv_sec * 1e6 + tv_end.tv_usec) - 
+    (tv_begin.tv_sec * 1e6 + tv_begin.tv_usec)) / (double)1e6;
 }
 
 void benchmark_rstats_mean() {
