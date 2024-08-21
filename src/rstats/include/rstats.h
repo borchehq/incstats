@@ -331,20 +331,16 @@ inline void rstats_central_moment(double x, double w, double *buffer, uint64_t p
  */
 inline void rstats_central_moment_finalize(double *results, double *buffer, 
 uint64_t p, bool standardize) {
+    results[0] = 1.0;
+    results[1] = 0.0;
     for(uint64_t i = 2; i < p + 1; i++) {
         results[i] = buffer[i] / buffer[0];
     }
     if(standardize) {
-        for(uint64_t i = 3; i < p + 1; i++) {
-            results[i] = results[i] / rstats_pow(sqrt(results[2]), i);
+        double variance = results[2];
+        for(uint64_t i = 0; i < p + 1; i++) {
+            results[i] = results[i] / rstats_pow(sqrt(variance), i);
         }
-        if(p >= 2) {
-            results[2] = 1.0; // 2nd standardized central moment is always 1.
-        }
-    }
-    results[0] = 1.0; // 0th standardized central moment is always 1.
-    if(p >= 1) {
-        results[1] = 0.0; // 1st standardized central moment is always 0.
     }
     results[p + 1] = buffer[1]; // Mean.
 }
