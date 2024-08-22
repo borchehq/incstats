@@ -3,7 +3,8 @@
 **librstats** is a C library for efficiently computing running statistics, such as mean, variance, skewness, kurtosis, central moments, and finding the maximum and minimum values in a dataset. The library is designed to handle weighted data points, making it suitable for a wide range of applications.
 
 ## Status
-[![Test Status](https://github.com/borchehq/rstats/actions/workflows/ci.yml/badge.svg)](https://github.com/borchehq/rstats/actions/workflows/ci.yml)
+[![CI](https://github.com/borchehq/rstats/actions/workflows/ci.yml/badge.svg)](https://github.com/borchehq/rstats/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/github/borchehq/rstats/graph/badge.svg?token=H24FODSV01)](https://codecov.io/github/borchehq/rstats)
 ## Features
 
 - Compute running mean, variance, skewness, and kurtosis.
