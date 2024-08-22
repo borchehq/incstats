@@ -45,7 +45,7 @@ jobs:
         flags: unittests
         name: codecov-umbrella
         fail_ci_if_error: true
-        codecov_yml_path: .github/
+        codecov_yml_path: .github/codecov.yml
 
 
 
