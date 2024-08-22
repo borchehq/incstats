@@ -20,7 +20,7 @@ jobs:
     - name: Configure with CMake
       run: |
         cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug \
-              -DCMAKE_C_FLAGS="--coverage" -DCMAKE_CXX_FLAGS="--coverage" \
+              -DCMAKE_C_FLAGS="--coverage -O0" \
               -DCMAKE_EXE_LINKER_FLAGS="--coverage"
 
     - name: Build
@@ -33,7 +33,8 @@ jobs:
       run: |
         cd build
         lcov --capture --directory . --output-file coverage.info
-        lcov --remove coverage.info '/usr/*' --output-file coverage.info  # Remove coverage for system files
+        lcov --remove coverage.info '/usr/*' --output-file coverage.info  # Remove coverage for system files.
+        lcov --remove coverage.info 'src/rstats/test/benchmark_rstats.c' --output-file coverage.info  # Remove coverage for benchmarkrstats.
         lcov --list coverage.info  # Optional: Display coverage info
 
     - name: Upload Coverage to Codecov
