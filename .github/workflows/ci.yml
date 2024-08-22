@@ -34,7 +34,6 @@ jobs:
         cd build
         lcov --capture --directory . --output-file coverage.info
         lcov --remove coverage.info '/usr/*' --output-file coverage.info  # Remove coverage for system files.
-        lcov --remove coverage.info 'src/rstats/test/benchmark_rstats.c' --output-file coverage.info  # Remove coverage for benchmarkrstats.
         lcov --list coverage.info  # Optional: Display coverage info
 
     - name: Upload Coverage to Codecov
