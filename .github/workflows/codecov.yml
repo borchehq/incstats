@@ -1,3 +1,0 @@
-name: codecov-conf
-ignore:
-    - "rstats/src/rstats/test/benchmark_rstats.c"
