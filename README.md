@@ -5,6 +5,7 @@
 ## Status
 [![CI](https://github.com/borchehq/rstats/actions/workflows/ci.yml/badge.svg)](https://github.com/borchehq/rstats/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/github/borchehq/rstats/graph/badge.svg?token=H24FODSV01)](https://codecov.io/github/borchehq/rstats)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/427138751ae64c2cafe2036c844e0642)](https://app.codacy.com/gh/borchehq/rstats/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 ## Features
 
 - Compute running mean, variance, skewness, and kurtosis.
