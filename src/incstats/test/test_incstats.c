@@ -8,7 +8,7 @@
 #include <float.h>
 #include <stdlib.h>
 
-#include "rstats.h"
+#include "incstats.h"
 
 #define LENGTH_ARRAY 1000
 #define ITERATIONS_TEST 100
@@ -20,7 +20,7 @@ void fill_random(double *array, size_t length, double min, double max) {
     }
 }
 
-void test_rstats_mean() {
+void test_incstats_mean() {
     for(size_t k = 0; k < ITERATIONS_TEST; k++) {
         double buffer[2] = {0.0};
         double x[LENGTH_ARRAY] = {0.0};
@@ -35,8 +35,8 @@ void test_rstats_mean() {
         fill_random(weights, LENGTH_ARRAY, 1e-5, 1.0);
 
         for(size_t i = 0; i < LENGTH_ARRAY; i++) {
-            rstats_mean(x[i], weights[i], buffer);
-            rstats_mean_finalize(&mean, buffer);
+            incstats_mean(x[i], weights[i], buffer);
+            incstats_mean_finalize(&mean, buffer);
             sum_comp += weights[i] * x[i];
             sum_weights_comp += weights[i];
             comp = sum_comp / sum_weights_comp;
@@ -45,7 +45,7 @@ void test_rstats_mean() {
     }
 }
 
-void test_rstats_variance() {
+void test_incstats_variance() {
     for(size_t k = 0; k < ITERATIONS_TEST; k++) {
         double x[LENGTH_ARRAY] = {0.0};
         double weights[LENGTH_ARRAY] = {0.0};
@@ -61,8 +61,8 @@ void test_rstats_variance() {
         fill_random(weights, LENGTH_ARRAY, 1e-5, 1.0);
 
         for(size_t i = 0; i < LENGTH_ARRAY; i++) {
-            rstats_variance(x[i], weights[i], buffer);
-            rstats_variance_finalize(results, buffer);
+            incstats_variance(x[i], weights[i], buffer);
+            incstats_variance_finalize(results, buffer);
             sum_comp += weights[i] * x[i];
             sum_weights_comp += weights[i];
             comp = sum_comp / sum_weights_comp;
@@ -77,7 +77,7 @@ void test_rstats_variance() {
     }
 }
 
-void test_rstats_wskewness() {
+void test_incstats_wskewness() {
     for(size_t k = 0; k < ITERATIONS_TEST; k++) {
         double x[LENGTH_ARRAY] = {0.0};
         double weights[LENGTH_ARRAY] = {0.0};
@@ -93,8 +93,8 @@ void test_rstats_wskewness() {
         fill_random(weights, LENGTH_ARRAY, 1e-5, 1.0);
 
         for(size_t i = 0; i < LENGTH_ARRAY; i++) {
-            rstats_skewness(x[i], weights[i], buffer);
-            rstats_skewness_finalize(results, buffer);
+            incstats_skewness(x[i], weights[i], buffer);
+            incstats_skewness_finalize(results, buffer);
             sum_comp += weights[i] * x[i];
             sum_weights_comp += weights[i];
             comp = sum_comp / sum_weights_comp;
@@ -117,7 +117,7 @@ void test_rstats_wskewness() {
     }
 }
 
-void test_rstats_kurtosis() {
+void test_incstats_kurtosis() {
     for(size_t k = 0; k < ITERATIONS_TEST; k++) {
         double x[LENGTH_ARRAY] = {0.0};
         double weights[LENGTH_ARRAY] = {0.0};
@@ -135,8 +135,8 @@ void test_rstats_kurtosis() {
         fill_random(weights, LENGTH_ARRAY, 1e-5, 1.0);
 
         for(size_t i = 0; i < LENGTH_ARRAY; i++) {
-            rstats_kurtosis(x[i], weights[i], buffer);
-            rstats_kurtosis_finalize(results, buffer);
+            incstats_kurtosis(x[i], weights[i], buffer);
+            incstats_kurtosis_finalize(results, buffer);
             sum_comp += weights[i] * x[i];
             sum_weights_comp += weights[i];
             comp = sum_comp / sum_weights_comp;
@@ -183,9 +183,9 @@ void test_central_moment() {
         fill_random(weights, LENGTH_ARRAY, 1e-5, 1.0);
 
         for(size_t i = 0; i < LENGTH_ARRAY; i++) {
-            rstats_central_moment(x[i], weights[i], buffer, p);
-            rstats_central_moment_finalize(results, buffer, p, false);
-            rstats_central_moment_finalize(results_standardized, buffer, p,
+            incstats_central_moment(x[i], weights[i], buffer, p);
+            incstats_central_moment_finalize(results, buffer, p, false);
+            incstats_central_moment_finalize(results_standardized, buffer, p,
             true);
             // Calculate mean.
             mass += weights[i] * x[i];
@@ -214,7 +214,7 @@ void test_central_moment() {
     }
 }
 
-void test_rstats_max() {
+void test_incstats_max() {
     double x[LENGTH_ARRAY] = {0.0};
     double max = DBL_MIN;
 
@@ -222,14 +222,14 @@ void test_rstats_max() {
         fill_random(x, LENGTH_ARRAY, -10000, 10000);
         x[LENGTH_ARRAY / 2] = 18000.0;
         for(size_t i = 0; i < LENGTH_ARRAY; i++) {
-            rstats_max(x[i], &max);
+            incstats_max(x[i], &max);
         }
         assert(18000.0 == max);
     }
 }
 
 
-void test_rstats_min() {
+void test_incstats_min() {
     double x[LENGTH_ARRAY] = {0.0};
     double min = DBL_MAX;
 
@@ -237,7 +237,7 @@ void test_rstats_min() {
         fill_random(x, LENGTH_ARRAY, -10000, 10000);
         x[LENGTH_ARRAY / 2] = -18000.0;
         for(size_t i = 0; i < LENGTH_ARRAY; i++) {
-            rstats_min(x[i], &min);
+            incstats_min(x[i], &min);
         }
         assert(-18000.0 == min);
     }
@@ -245,18 +245,18 @@ void test_rstats_min() {
 
 int main(int argc, char const *argv[]) {
     srand(111111);
-    printf("[i] Testing rstats_mean()...\n");
-    test_rstats_mean();
-    printf("[i] Testing rstats_variance()...\n");
-    test_rstats_variance();
-    printf("[i] Testing rstats_wskewness()...\n");
-    test_rstats_wskewness();
-    printf("[i] Testing rstats_kurtosis()...\n");
-    test_rstats_kurtosis();
-    printf("[i] Testing rstats_max()...\n");
-    test_rstats_max();
-    printf("[i] Testing rstats_min()...\n");
-    test_rstats_min();
+    printf("[i] Testing incstats_mean()...\n");
+    test_incstats_mean();
+    printf("[i] Testing incstats_variance()...\n");
+    test_incstats_variance();
+    printf("[i] Testing incstats_wskewness()...\n");
+    test_incstats_wskewness();
+    printf("[i] Testing incstats_kurtosis()...\n");
+    test_incstats_kurtosis();
+    printf("[i] Testing incstats_max()...\n");
+    test_incstats_max();
+    printf("[i] Testing incstats_min()...\n");
+    test_incstats_min();
     printf("[i] Testing central_moment...\n");
     test_central_moment();
     return 0;

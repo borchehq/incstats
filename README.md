@@ -1,11 +1,11 @@
-# librstats
+# libincstats
 
-**librstats** is a C library for efficiently computing running statistics, such as mean, variance, skewness, kurtosis, central moments, and finding the maximum and minimum values in a dataset. The library is designed to handle weighted data points, making it suitable for a wide range of applications.
+**incstats** is a C library for efficiently computing running statistics, such as mean, variance, skewness, kurtosis, central moments, and finding the maximum and minimum values in a dataset. The library is designed to handle weighted data points, making it suitable for a wide range of applications.
 
 ## Status
-[![CI](https://github.com/borchehq/rstats/actions/workflows/ci.yml/badge.svg)](https://github.com/borchehq/rstats/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/github/borchehq/rstats/graph/badge.svg?token=H24FODSV01)](https://codecov.io/github/borchehq/rstats)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/427138751ae64c2cafe2036c844e0642)](https://app.codacy.com/gh/borchehq/rstats/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![CI](https://github.com/borchehq/incstats/actions/workflows/ci.yml/badge.svg)](https://github.com/borchehq/incstats/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/github/borchehq/incstats/graph/badge.svg?token=H24FODSV01)](https://codecov.io/github/borchehq/incstats)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/427138751ae64c2cafe2036c844e0642)](https://app.codacy.com/gh/borchehq/incstats/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 ## Features
 
 - Compute running mean, variance, skewness, and kurtosis.
@@ -21,8 +21,8 @@ To build and install the library, you will need [CMake](https://cmake.org/) vers
 
 1. Clone the repository:
 ```bash
-   git clone https://github.com/borchehq/rstats.git
-   cd rstats
+   git clone https://github.com/borchehq/incstats.git
+   cd incstats
 ```
 
 2. Create a build directory and navigate into it:
@@ -53,43 +53,43 @@ To build and install the library, you will need [CMake](https://cmake.org/) vers
 
 ## Usage
 
-Include the rstats header files in your project to use the library functions. 
+Include the incstats header files in your project to use the library functions. 
 Here is a brief overview of the available functions:
 
 Running Mean
 ```C
-inline void rstats_mean(double x, double w, double *buffer);
-inline void rstats_mean_finalize(double *mean, double *buffer);
+inline void incstats_mean(double x, double w, double *buffer);
+inline void incstats_mean_finalize(double *mean, double *buffer);
 ```
 
 Running Variance
 ```C
-inline void rstats_variance(double x, double w, double *buffer);
-inline void rstats_variance_finalize(double *results, double *buffer);
+inline void incstats_variance(double x, double w, double *buffer);
+inline void incstats_variance_finalize(double *results, double *buffer);
 ```
 
 Running Skewness
 ```C
-inline void rstats_skewness(double x, double w, double *buffer);
-inline void rstats_skewness_finalize(double *results, double *buffer);
+inline void incstats_skewness(double x, double w, double *buffer);
+inline void incstats_skewness_finalize(double *results, double *buffer);
 ```
 
 Running Kurtosis
 ```C
-inline void rstats_kurtosis(double x, double w, double *buffer);
-inline void rstats_kurtosis_finalize(double *results, double *buffer);
+inline void incstats_kurtosis(double x, double w, double *buffer);
+inline void incstats_kurtosis_finalize(double *results, double *buffer);
 ```
 
 Central Moments
 ```C
-inline void rstats_central_moment(double x, double w, double *buffer, uint64_t p);
-inline void rstats_central_moment_finalize(double *results, double *buffer, uint64_t p, bool standardize);
+inline void incstats_central_moment(double x, double w, double *buffer, uint64_t p);
+inline void incstats_central_moment_finalize(double *results, double *buffer, uint64_t p, bool standardize);
 ```
 
 Maximum and Minimum
 ```C
-inline void rstats_max(double x, double *max);
-inline void rstats_min(double x, double *min);
+inline void incstats_max(double x, double *max);
+inline void incstats_min(double x, double *min);
 ```
 
 
@@ -102,7 +102,7 @@ measures with minimal passes through the data.
 **Example Usage in C**
 ```C
 #include <stdio.h>
-#include "rstats.h"
+#include "incstats.h"
 
 int main() {
     double buffer[5] = {0}; // Initialize buffer for mean, variance, skewness, kurtosis
@@ -112,12 +112,12 @@ int main() {
 
     // Update statistics with new values
     for (int i = 0; i < 20; ++i) {
-        rstats_kurtosis(data[i], w, buffer);  // This will also update mean, variance, and skewness
+        incstats_kurtosis(data[i], w, buffer);  // This will also update mean, variance, and skewness
     }
 
     // Finalize and get results
     double results[4];
-    rstats_kurtosis_finalize(results, buffer);
+    incstats_kurtosis_finalize(results, buffer);
 
     printf("Mean: %f\n", results[0]);
     printf("Variance: %f\n", results[1]);
@@ -133,7 +133,7 @@ int main() {
 
 // Include the C header file with extern "C"
 extern "C" {
-#include "rstats.h"
+#include "incstats.h"
 }
 
 int main() {
@@ -144,12 +144,12 @@ int main() {
 
     // Update statistics with new values
     for (int i = 0; i < 20; ++i) {
-        rstats_kurtosis(data[i], w, buffer);  // This will also update mean, variance, and skewness
+        incstats_kurtosis(data[i], w, buffer);  // This will also update mean, variance, and skewness
     }
 
     // Finalize and get results
     double results[4];
-    rstats_kurtosis_finalize(results, buffer);
+    incstats_kurtosis_finalize(results, buffer);
 
     std::cout << "Mean: " << results[0] << std::endl;
     std::cout << "Variance: " << results[1] << std::endl;

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(librstats VERSION 1.1.1 LANGUAGES C)
+project(libincstats VERSION 1.1.1 LANGUAGES C)
 
 # Force export of all symbols under Windows.
 if(WIN32)
