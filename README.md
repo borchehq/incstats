@@ -4,7 +4,7 @@
 
 ## Status
 [![CI](https://github.com/borchehq/incstats/actions/workflows/ci.yml/badge.svg)](https://github.com/borchehq/incstats/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/github/borchehq/incstats/graph/badge.svg?token=H24FODSV01)](https://codecov.io/github/borchehq/incstats)
+[![codecov](https://codecov.io/gh/borchehq/incstats/graph/badge.svg?token=H24FODSV01)](https://codecov.io/gh/borchehq/incstats)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/427138751ae64c2cafe2036c844e0642)](https://app.codacy.com/gh/borchehq/incstats/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 ## Features
 
