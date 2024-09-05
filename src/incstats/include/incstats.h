@@ -1,5 +1,5 @@
-#ifndef incstats_H
-#define incstats_H
+#ifndef INCSTATS_H
+#define INCSTATS_H
 
 // This is needed for compilation with MSVC under Windows.
 #ifndef _USE_MATH_DEFINES
